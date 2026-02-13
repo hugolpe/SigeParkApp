@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SigeParkApp.Models
 {
     /// <summary>
@@ -6,6 +8,11 @@ namespace SigeParkApp.Models
     public class LoginRequest
     {
         public string Email { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Contraseña del usuario. No debe ser registrada en logs.
+        /// Nota: En una implementación más segura, considerar limpiar de memoria después de usar.
+        /// </summary>
         public string Password { get; set; } = string.Empty;
     }
 

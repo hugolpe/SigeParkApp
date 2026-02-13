@@ -35,20 +35,30 @@ namespace SigeParkApp.Services
                     Password = password
                 };
 
-                // Configurar el header para evitar la página intermedia de ngrok
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("ngrok-skip-browser-warning", "true");
+                // Crear un mensaje HTTP con el header para evitar la página intermedia de ngrok
+                var request = new HttpRequestMessage(HttpMethod.Post, LoginEndpoint)
+                {
+                    Content = JsonContent.Create(loginRequest)
+                };
+                request.Headers.Add("ngrok-skip-browser-warning", "true");
 
                 // Realizar la solicitud POST al endpoint de login
-                var response = await _httpClient.PostAsJsonAsync(LoginEndpoint, loginRequest);
+                var response = await _httpClient.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
                     // Leer la respuesta como string
                     var message = await response.Content.ReadAsStringAsync();
                     
-                    // Eliminar comillas si la respuesta es un string JSON
-                    message = message.Trim('"');
+                    // Deserializar correctamente si es un string JSON
+                    try
+                    {
+                        message = JsonSerializer.Deserialize<string>(message) ?? message;
+                    }
+                    catch
+                    {
+                        // Si falla la deserialización, usar el string original
+                    }
 
                     return new AuthResult
                     {
@@ -60,7 +70,16 @@ namespace SigeParkApp.Services
                 {
                     // Error 401: Credenciales incorrectas
                     var message = await response.Content.ReadAsStringAsync();
-                    message = message.Trim('"');
+                    
+                    // Deserializar correctamente si es un string JSON
+                    try
+                    {
+                        message = JsonSerializer.Deserialize<string>(message) ?? message;
+                    }
+                    catch
+                    {
+                        // Si falla la deserialización, usar el string original
+                    }
                     
                     return new AuthResult
                     {
