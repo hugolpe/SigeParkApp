@@ -1,10 +1,15 @@
-﻿namespace SigeParkApp
+﻿using SigeParkApp.Services;
+
+namespace SigeParkApp
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        private readonly AuthService _authService;
+
+        public MainPage(AuthService authService)
         {
             InitializeComponent();
+            _authService = authService;
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)
@@ -17,21 +22,27 @@
                 return;
             }
 
-            // Aquí puedes agregar tu lógica de autenticación
-            // Por ejemplo, llamar a un servicio web, validar credenciales, etc.
-            
+            // Mostrar mensaje de carga
             lblResultado.Text = "Iniciando sesión...";
             lblResultado.TextColor = Colors.Blue;
             
-            // Simulación de login - REEMPLAZAR esto con autenticación real
-            // En una implementación real, validar contra API/base de datos
-            await Task.Delay(1000);
+            // Llamar al servicio de autenticación real
+            var result = await _authService.LoginAsync(txtEmail.Text, txtPassword.Text);
             
-            // Si el login es exitoso, navega a la siguiente página
-            // await Navigation.PushAsync(new HomePage());
-            
-            lblResultado.Text = "Credenciales correctas";
-            lblResultado.TextColor = Colors.Green;
+            // Mostrar el resultado
+            if (result.Success)
+            {
+                lblResultado.Text = result.Message;
+                lblResultado.TextColor = Colors.Green;
+                
+                // Si el login es exitoso, navega a la siguiente página
+                // await Navigation.PushAsync(new HomePage());
+            }
+            else
+            {
+                lblResultado.Text = result.Message;
+                lblResultado.TextColor = Colors.Red;
+            }
         }
 
         // Descomenta esto si necesitas el botón de vista previa

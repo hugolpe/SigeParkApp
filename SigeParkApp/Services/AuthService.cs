@@ -1,0 +1,110 @@
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using SigeParkApp.Models;
+
+namespace SigeParkApp.Services
+{
+    /// <summary>
+    /// Servicio de autenticación que se comunica con la API de UserApi
+    /// </summary>
+    public class AuthService
+    {
+        private readonly HttpClient _httpClient;
+        private const string LoginEndpoint = "/api/accounts/login";
+
+        public AuthService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        /// <summary>
+        /// Realiza el login del usuario con la API
+        /// </summary>
+        /// <param name="email">Email del usuario</param>
+        /// <param name="password">Contraseña del usuario</param>
+        /// <returns>Resultado de la autenticación</returns>
+        public async Task<AuthResult> LoginAsync(string email, string password)
+        {
+            try
+            {
+                // Crear el objeto de solicitud
+                var loginRequest = new LoginRequest
+                {
+                    Email = email,
+                    Password = password
+                };
+
+                // Configurar el header para evitar la página intermedia de ngrok
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("ngrok-skip-browser-warning", "true");
+
+                // Realizar la solicitud POST al endpoint de login
+                var response = await _httpClient.PostAsJsonAsync(LoginEndpoint, loginRequest);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Leer la respuesta como string
+                    var message = await response.Content.ReadAsStringAsync();
+                    
+                    // Eliminar comillas si la respuesta es un string JSON
+                    message = message.Trim('"');
+
+                    return new AuthResult
+                    {
+                        Success = true,
+                        Message = message
+                    };
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // Error 401: Credenciales incorrectas
+                    var message = await response.Content.ReadAsStringAsync();
+                    message = message.Trim('"');
+                    
+                    return new AuthResult
+                    {
+                        Success = false,
+                        Message = message
+                    };
+                }
+                else
+                {
+                    // Otro error HTTP
+                    return new AuthResult
+                    {
+                        Success = false,
+                        Message = $"Error del servidor: {response.StatusCode}"
+                    };
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // Error de conexión o red
+                return new AuthResult
+                {
+                    Success = false,
+                    Message = "Error de conexión. Verifica tu conexión a internet."
+                };
+            }
+            catch (TaskCanceledException ex)
+            {
+                // Timeout
+                return new AuthResult
+                {
+                    Success = false,
+                    Message = "La solicitud tardó demasiado tiempo. Intenta nuevamente."
+                };
+            }
+            catch (Exception ex)
+            {
+                // Error general
+                return new AuthResult
+                {
+                    Success = false,
+                    Message = $"Error inesperado: {ex.Message}"
+                };
+            }
+        }
+    }
+}
