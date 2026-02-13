@@ -20,7 +20,6 @@
                 <Entry x:Name="txtPlaca"
                        Placeholder="Ingrese placa"
                        TextTransform="Uppercase"
-                       TextChanged="txtPlaca_TextChanged"
                        FontSize="18" />
                 <Button x:Name="btnValidar"
                         Text="Validar Placa"

@@ -145,7 +145,7 @@ namespace SigeParkApp.Services
                 return "Desconocido";
             }
 
-            var ultimoCaracter = placa[placa.Length - 1];
+            var ultimoCaracter = placa[^1];
 
             if (char.IsLetter(ultimoCaracter))
             {

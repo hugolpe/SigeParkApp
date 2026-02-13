@@ -97,20 +97,5 @@ namespace SigeParkApp
             
             // Preparado para futuras validaciones con el API
         }
-
-        /// <summary>
-        /// Evento que se dispara cuando el texto en txtPlaca cambia
-        /// Convierte automáticamente el texto a mayúsculas
-        /// </summary>
-        private void txtPlaca_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtPlaca.Text))
-            {
-                // Convertir automáticamente a mayúsculas
-                var cursorPosition = txtPlaca.CursorPosition;
-                txtPlaca.Text = txtPlaca.Text.ToUpper();
-                txtPlaca.CursorPosition = cursorPosition;
-            }
-        }
     }
 }
