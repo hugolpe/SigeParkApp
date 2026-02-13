@@ -13,6 +13,7 @@
             if (string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
             {
                 lblResultado.Text = "Por favor ingrese usuario y contraseña";
+                lblResultado.TextColor = Colors.Red;
                 return;
             }
 
@@ -22,7 +23,8 @@
             lblResultado.Text = "Iniciando sesión...";
             lblResultado.TextColor = Colors.Blue;
             
-            // Simulación de login (reemplaza esto con tu lógica real)
+            // Simulación de login - REEMPLAZAR esto con autenticación real
+            // En una implementación real, validar contra API/base de datos
             await Task.Delay(1000);
             
             // Si el login es exitoso, navega a la siguiente página
