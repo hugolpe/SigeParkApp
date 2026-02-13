@@ -30,12 +30,9 @@ namespace SigeParkApp
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
 
-            // Registrar servicios en el contenedor de DI
-            // AuthService ya está registrado por AddHttpClient<AuthService>
-            // VehicleService ya está registrado por AddHttpClient<VehicleService>
-            builder.Services.AddSingleton<MainPage>();
-            builder.Services.AddSingleton<VehiclesPage>();
-            builder.Services.AddSingleton<AppShell>();
+            // Registrar páginas como Transient (se crean nuevas instancias cada vez)
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<VehiclesPage>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

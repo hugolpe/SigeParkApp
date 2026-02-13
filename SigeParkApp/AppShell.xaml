@@ -6,6 +6,14 @@
     xmlns:local="clr-namespace:SigeParkApp"
     Title="SigeParkApp">
 
-    <!-- ShellContent se configurará programáticamente desde AppShell.xaml.cs usando DI -->
+    <ShellContent
+        Title="Home"
+        Route="MainPage"
+        ContentTemplate="{DataTemplate local:MainPage}" />
+
+    <ShellContent
+        Title="Vehículos"
+        Route="VehiclesPage"
+        ContentTemplate="{DataTemplate local:VehiclesPage}" />
 
 </Shell>
