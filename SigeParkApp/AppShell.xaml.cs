@@ -5,9 +5,6 @@ namespace SigeParkApp
         public AppShell()
         {
             InitializeComponent();
-
-            // Registrar rutas para navegación
-            Routing.RegisterRoute("vehicles", typeof(VehiclesPage));
         }
     }
 }
