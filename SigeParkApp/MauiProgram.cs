@@ -24,7 +24,7 @@ namespace SigeParkApp
             });
 
             // Registrar servicios en el contenedor de DI
-            builder.Services.AddSingleton<AuthService>();
+            // AuthService ya está registrado por AddHttpClient<AuthService>
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<AppShell>();
 

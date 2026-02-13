@@ -78,7 +78,7 @@ namespace SigeParkApp.Services
                     };
                 }
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 // Error de conexión o red
                 return new AuthResult
@@ -87,7 +87,7 @@ namespace SigeParkApp.Services
                     Message = "Error de conexión. Verifica tu conexión a internet."
                 };
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 // Timeout
                 return new AuthResult
@@ -98,7 +98,7 @@ namespace SigeParkApp.Services
             }
             catch (Exception ex)
             {
-                // Error general
+                // Error general - en producción, esto debería registrarse para debugging
                 return new AuthResult
                 {
                     Success = false,
