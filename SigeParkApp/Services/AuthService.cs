@@ -51,13 +51,14 @@ namespace SigeParkApp.Services
                     var message = await response.Content.ReadAsStringAsync();
                     
                     // Deserializar correctamente si es un string JSON
+                    // Si falla, usar el string original (respuesta no estándar)
                     try
                     {
                         message = JsonSerializer.Deserialize<string>(message) ?? message;
                     }
-                    catch
+                    catch (JsonException)
                     {
-                        // Si falla la deserialización, usar el string original
+                        // La respuesta no es un JSON válido, usar el contenido tal cual
                     }
 
                     return new AuthResult
@@ -72,13 +73,14 @@ namespace SigeParkApp.Services
                     var message = await response.Content.ReadAsStringAsync();
                     
                     // Deserializar correctamente si es un string JSON
+                    // Si falla, usar el string original (respuesta no estándar)
                     try
                     {
                         message = JsonSerializer.Deserialize<string>(message) ?? message;
                     }
-                    catch
+                    catch (JsonException)
                     {
-                        // Si falla la deserialización, usar el string original
+                        // La respuesta no es un JSON válido, usar el contenido tal cual
                     }
                     
                     return new AuthResult
