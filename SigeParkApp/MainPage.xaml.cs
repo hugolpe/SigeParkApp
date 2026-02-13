@@ -2,23 +2,43 @@
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
+        private async void OnLoginClicked(object sender, EventArgs e)
         {
-            count++;
+            // Validación básica
+            if (string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
+            {
+                lblResultado.Text = "Por favor ingrese usuario y contraseña";
+                return;
+            }
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            // Aquí puedes agregar tu lógica de autenticación
+            // Por ejemplo, llamar a un servicio web, validar credenciales, etc.
+            
+            lblResultado.Text = "Iniciando sesión...";
+            lblResultado.TextColor = Colors.Blue;
+            
+            // Simulación de login (reemplaza esto con tu lógica real)
+            await Task.Delay(1000);
+            
+            // Si el login es exitoso, navega a la siguiente página
+            // await Navigation.PushAsync(new HomePage());
+            
+            lblResultado.Text = "Credenciales correctas";
+            lblResultado.TextColor = Colors.Green;
         }
+
+        // Descomenta esto si necesitas el botón de vista previa
+        /*
+        private async void OnTicketPreviewClicked(object sender, EventArgs e)
+        {
+            // Navegar a la vista previa del ticket
+            // await Navigation.PushAsync(new TicketPreviewPage());
+        }
+        */
     }
 }
