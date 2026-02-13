@@ -1,4 +1,4 @@
-﻿namespace SigeParkApp
+namespace SigeParkApp
 {
     public partial class App : Application
     {
@@ -6,11 +6,6 @@
         {
             InitializeComponent();
             MainPage = appShell;
-        }
-
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(MainPage);
         }
     }
 }
