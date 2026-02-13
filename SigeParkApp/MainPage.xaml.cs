@@ -35,8 +35,8 @@ namespace SigeParkApp
                 lblResultado.Text = result.Message;
                 lblResultado.TextColor = Colors.Green;
                 
-                // Si el login es exitoso, navega a la siguiente página
-                // await Navigation.PushAsync(new HomePage());
+                // Si el login es exitoso, navega a la página de vehículos
+                await Shell.Current.GoToAsync("//vehicles");
             }
             else
             {
