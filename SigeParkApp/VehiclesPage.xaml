@@ -34,6 +34,39 @@
                    HorizontalOptions="Center"
                    IsVisible="False" />
             
+            <!-- Label para mostrar tipo de vehículo -->
+            <Label x:Name="lblTipo"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   IsVisible="False" />
+            
+            <!-- Label para mostrar formato de placa -->
+            <Label x:Name="lblFormato"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   IsVisible="False" />
+            
+            <!-- Picker para seleccionar tarifa -->
+            <Picker x:Name="pickerTarifa"
+                    Title="Seleccione una tarifa"
+                    IsVisible="False" />
+            
+            <!-- Botón para registrar entrada -->
+            <Button x:Name="btnRegistrar"
+                    Text="✅ Registrar Entrada"
+                    Clicked="OnRegistrarClicked"
+                    BackgroundColor="Green"
+                    TextColor="White"
+                    IsVisible="False" />
+            
+            <!-- Botón para cobrar salida -->
+            <Button x:Name="btnCobrarSalida"
+                    Text="💰 Cobrar Salida"
+                    Clicked="OnCobrarClicked"
+                    BackgroundColor="Red"
+                    TextColor="White"
+                    IsVisible="False" />
+            
             <!-- Label para mostrar resumen -->
             <Label x:Name="lblResumen"
                    FontSize="16"
