@@ -35,12 +35,22 @@ namespace SigeParkApp.Services
                     Password = password
                 };
 
-                // Crear un mensaje HTTP con el header para evitar la página intermedia de ngrok
+                var options = new JsonSerializerOptions
+                {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+
+                var jsonContent = JsonSerializer.Serialize(loginRequest, options);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
                 var request = new HttpRequestMessage(HttpMethod.Post, LoginEndpoint)
                 {
-                    Content = JsonContent.Create(loginRequest)
+                    Content = content
                 };
+                
+                // Headers necesarios para ngrok
                 request.Headers.Add("ngrok-skip-browser-warning", "true");
+                request.Headers.Add("Accept", "application/json");
 
                 // Realizar la solicitud POST al endpoint de login
                 var response = await _httpClient.SendAsync(request);

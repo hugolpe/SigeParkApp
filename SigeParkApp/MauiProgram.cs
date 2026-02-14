@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using SigeParkApp.Services;
 
 namespace SigeParkApp
@@ -8,6 +9,7 @@ namespace SigeParkApp
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -16,29 +18,30 @@ namespace SigeParkApp
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Configuración de HttpClient con la URL base de la API
             builder.Services.AddHttpClient<AuthService>(client =>
             {
-                client.BaseAddress = new Uri("https://subpar-overidly-meta.ngrok-free.dev");
+                client.BaseAddress = new Uri("https://unsecularized-marshlike-lavone.ngrok-free.dev");
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
 
-            // Configuración de HttpClient para VehicleService
             builder.Services.AddHttpClient<VehicleService>(client =>
             {
-                client.BaseAddress = new Uri("https://subpar-overidly-meta.ngrok-free.dev");
+                client.BaseAddress = new Uri("https://unsecularized-marshlike-lavone.ngrok-free.dev");
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
 
-            // Registrar servicios en el contenedor de DI
-            // AuthService ya está registrado por AddHttpClient<AuthService>
-            // VehicleService ya está registrado por AddHttpClient<VehicleService>
-            builder.Services.AddSingleton<MainPage>();
-            builder.Services.AddSingleton<VehiclesPage>();
+            //// Registrar páginas como Transient para evitar problemas de DI circular
+            //builder.Services.AddTransient<MainPage>();
+            //builder.Services.AddTransient<VehiclesPage>();
+            //builder.Services.AddTransient<AppShell>();
+
             builder.Services.AddSingleton<AppShell>();
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<VehiclesPage>();
+
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
