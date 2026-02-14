@@ -10,6 +10,9 @@ namespace SigeParkApp
         {
             var builder = MauiApp.CreateBuilder();
 
+            // ✅ URL centralizada - cambia solo aquí cuando cambies el túnel
+            const string apiBaseUrl = "https://unsecularized-marshlike-lavone.ngrok-free.dev";
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -20,25 +23,20 @@ namespace SigeParkApp
 
             builder.Services.AddHttpClient<AuthService>(client =>
             {
-                client.BaseAddress = new Uri("https://unsecularized-marshlike-lavone.ngrok-free.dev");
+                client.BaseAddress = new Uri(apiBaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
 
             builder.Services.AddHttpClient<VehicleService>(client =>
             {
-                client.BaseAddress = new Uri("https://unsecularized-marshlike-lavone.ngrok-free.dev");
+                client.BaseAddress = new Uri(apiBaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
 
-            //// Registrar páginas como Transient para evitar problemas de DI circular
-            //builder.Services.AddTransient<MainPage>();
-            //builder.Services.AddTransient<VehiclesPage>();
-            //builder.Services.AddTransient<AppShell>();
-
             builder.Services.AddSingleton<AppShell>();
+            builder.Services.AddSingleton<App>();
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<VehiclesPage>();
-
 
 #if DEBUG
             builder.Logging.AddDebug();

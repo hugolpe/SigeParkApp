@@ -61,11 +61,17 @@
                     
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame Padding="10"
-                                   Margin="5"
-                                   BorderColor="LightGray"
-                                   CornerRadius="5"
-                                   HasShadow="True">
+                            <Border Padding="10"
+                                    Margin="5"
+                                    Stroke="LightGray"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 5">
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" 
+                                            Opacity="0.3" 
+                                            Radius="5" 
+                                            Offset="2,2" />
+                                </Border.Shadow>
                                 <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10">
                                     
                                     <!-- Placa -->
@@ -91,7 +97,7 @@
                                     <Label Grid.Row="2" Grid.Column="2"
                                            Text="{Binding Minutos, StringFormat='{0} minutos'}" />
                                 </Grid>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
