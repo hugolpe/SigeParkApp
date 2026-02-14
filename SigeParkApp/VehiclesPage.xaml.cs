@@ -44,7 +44,6 @@ namespace SigeParkApp
                     if (vehiculos.Any())
                     {
                         lblEmpty.IsVisible = false;
-                        
                         // Calcular y mostrar resumen
                         var totalCarros = vehiculos.Count(v => v.Tipo == "Carro");
                         var totalMotos = vehiculos.Count(v => v.Tipo == "Moto");
