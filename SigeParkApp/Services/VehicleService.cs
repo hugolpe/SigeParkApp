@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using SigeParkApp.Models;
 
@@ -10,6 +11,10 @@ namespace SigeParkApp.Services
     {
         private readonly HttpClient _httpClient;
         private const string ListaDentroEndpoint = "/api/Movimientos/lista-dentro";
+        private const string StatusEndpoint = "/api/Movimientos/status";
+        private const string NuevoEndpoint = "/api/Movimientos/nuevo";
+        private const string SalidaEndpoint = "/api/Movimientos/salida";
+        private const string CalcularEndpoint = "/api/Movimientos/calcular";
 
         public VehicleService(HttpClient httpClient)
         {
@@ -158,6 +163,231 @@ namespace SigeParkApp.Services
             else
             {
                 return "Desconocido";
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el estado de un vehículo (si está dentro o fuera del parqueadero)
+        /// </summary>
+        /// <param name="placa">Placa del vehículo</param>
+        /// <returns>Respuesta con el estado y detalles del vehículo</returns>
+        public async Task<StatusResponse> GetStatusAsync(string placa)
+        {
+            try
+            {
+                Console.WriteLine($"[VehicleService] Consultando estado de la placa: {placa}");
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{StatusEndpoint}/{placa}");
+                request.Headers.Add("ngrok-skip-browser-warning", "true");
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"[VehicleService] Respuesta de status recibida: {content}");
+
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var statusResponse = JsonSerializer.Deserialize<StatusResponse>(content, options);
+                    return statusResponse ?? new StatusResponse();
+                }
+                else
+                {
+                    Console.WriteLine($"[VehicleService] Error en status: {response.StatusCode}");
+                    return new StatusResponse { Error = $"Error: {response.StatusCode}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VehicleService] Error al obtener status: {ex.Message}");
+                return new StatusResponse { Error = ex.Message };
+            }
+        }
+
+        /// <summary>
+        /// Registra la entrada de un vehículo al parqueadero
+        /// </summary>
+        /// <param name="placa">Placa del vehículo</param>
+        /// <param name="tarifaId">ID de la tarifa seleccionada</param>
+        /// <returns>Respuesta con el ticket de entrada</returns>
+        public async Task<TicketResponse> RegistrarEntradaAsync(string placa, int tarifaId)
+        {
+            try
+            {
+                Console.WriteLine($"[VehicleService] Registrando entrada de {placa} con tarifa {tarifaId}");
+
+                var requestBody = new
+                {
+                    placa = placa,
+                    tarifaId = tarifaId
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var request = new HttpRequestMessage(HttpMethod.Post, NuevoEndpoint)
+                {
+                    Content = content
+                };
+                request.Headers.Add("ngrok-skip-browser-warning", "true");
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"[VehicleService] Entrada registrada: {responseContent}");
+
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var ticketResponse = JsonSerializer.Deserialize<TicketResponse>(responseContent, options);
+                    return ticketResponse ?? new TicketResponse { Success = false };
+                }
+                else
+                {
+                    Console.WriteLine($"[VehicleService] Error al registrar entrada: {response.StatusCode}");
+                    return new TicketResponse { Success = false };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VehicleService] Error al registrar entrada: {ex.Message}");
+                return new TicketResponse { Success = false };
+            }
+        }
+
+        /// <summary>
+        /// Registra la salida y cobro de un vehículo
+        /// </summary>
+        /// <param name="placa">Placa del vehículo</param>
+        /// <param name="pago">Monto pagado por el cliente</param>
+        /// <param name="monto">Monto total a cobrar</param>
+        /// <returns>True si se registró exitosamente</returns>
+        public async Task<bool> RegistrarSalidaAsync(string placa, decimal pago, decimal monto)
+        {
+            try
+            {
+                Console.WriteLine($"[VehicleService] Registrando salida de {placa}, pago: {pago}, monto: {monto}");
+
+                var requestBody = new
+                {
+                    placa = placa,
+                    pago = pago,
+                    monto = monto
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var request = new HttpRequestMessage(HttpMethod.Post, SalidaEndpoint)
+                {
+                    Content = content
+                };
+                request.Headers.Add("ngrok-skip-browser-warning", "true");
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"[VehicleService] Salida registrada exitosamente");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine($"[VehicleService] Error al registrar salida: {response.StatusCode}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VehicleService] Error al registrar salida: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Calcula el monto a cobrar por un vehículo
+        /// </summary>
+        /// <param name="placa">Placa del vehículo</param>
+        /// <returns>Monto a cobrar o null si no se pudo calcular</returns>
+        public async Task<decimal?> CalcularMontoAsync(string placa)
+        {
+            try
+            {
+                Console.WriteLine($"[VehicleService] Calculando monto para {placa}");
+
+                // Primero obtener el ID del movimiento desde lista-dentro
+                var request = new HttpRequestMessage(HttpMethod.Get, ListaDentroEndpoint);
+                request.Headers.Add("ngrok-skip-browser-warning", "true");
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var vehiculos = JsonSerializer.Deserialize<List<ListaDentroItem>>(content, options);
+                    var vehiculo = vehiculos?.FirstOrDefault(v => v.Placa.Equals(placa, StringComparison.OrdinalIgnoreCase));
+
+                    if (vehiculo != null)
+                    {
+                        // Calcular el monto usando el ID
+                        var calcRequest = new HttpRequestMessage(HttpMethod.Get, $"{CalcularEndpoint}/{vehiculo.Id}");
+                        calcRequest.Headers.Add("ngrok-skip-browser-warning", "true");
+
+                        var calcResponse = await _httpClient.SendAsync(calcRequest);
+
+                        if (calcResponse.IsSuccessStatusCode)
+                        {
+                            var calcContent = await calcResponse.Content.ReadAsStringAsync();
+                            var calcResult = JsonSerializer.Deserialize<CalculoResult>(calcContent, options);
+                            Console.WriteLine($"[VehicleService] Monto calculado: {calcResult?.Monto}");
+                            return calcResult?.Monto;
+                        }
+                    }
+                }
+
+                Console.WriteLine($"[VehicleService] No se pudo calcular el monto");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VehicleService] Error al calcular monto: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene la fecha de entrada de un vehículo como fallback
+        /// </summary>
+        /// <param name="placa">Placa del vehículo</param>
+        /// <returns>Fecha de entrada o null si no se encuentra</returns>
+        public async Task<DateTime?> ObtenerFechaEntradaAsync(string placa)
+        {
+            try
+            {
+                Console.WriteLine($"[VehicleService] Obteniendo fecha de entrada para {placa}");
+
+                var vehiculos = await GetVehiculosDentroAsync();
+                var vehiculo = vehiculos.FirstOrDefault(v => v.Placa.Equals(placa, StringComparison.OrdinalIgnoreCase));
+
+                return vehiculo?.FechaEntrada ?? vehiculo?.CFechaEntradaUtc;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VehicleService] Error al obtener fecha de entrada: {ex.Message}");
+                return null;
             }
         }
     }
