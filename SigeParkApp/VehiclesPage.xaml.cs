@@ -37,12 +37,15 @@ namespace SigeParkApp
                 // Actualizar la UI en el hilo principal
                 await Dispatcher.DispatchAsync(() =>
                 {
-                    // Actualizar el CollectionView
-                    listaDentro.ItemsSource = vehiculos;
+                    // Actualizar el BindableLayout
+                    BindableLayout.SetItemsSource(listaDentro, vehiculos);
 
-                    // Calcular y mostrar resumen
+                    // Mostrar/ocultar mensaje de lista vacía
                     if (vehiculos.Any())
                     {
+                        lblEmpty.IsVisible = false;
+                        
+                        // Calcular y mostrar resumen
                         var totalCarros = vehiculos.Count(v => v.Tipo == "Carro");
                         var totalMotos = vehiculos.Count(v => v.Tipo == "Moto");
                         var total = vehiculos.Count;
@@ -51,6 +54,7 @@ namespace SigeParkApp
                     }
                     else
                     {
+                        lblEmpty.IsVisible = true;
                         lblResumen.Text = "No hay vehículos dentro";
                     }
 
