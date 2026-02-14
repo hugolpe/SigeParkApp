@@ -74,24 +74,25 @@
                    HorizontalOptions="Center"
                    Margin="0,10,0,0" />
             
-            <!-- Lista de vehículos dentro usando BindableLayout -->
+            <!-- CollectionView para mostrar vehículos dentro -->
             <VerticalStackLayout Spacing="10">
                 <Label Text="Vehículos en el parqueadero:"
                        FontSize="18"
                        FontAttributes="Bold" />
                 
-                <!-- Mensaje cuando no hay vehículos -->
-                <Label x:Name="lblEmpty"
-                       Text="No hay vehículos dentro"
-                       HorizontalOptions="Center"
-                       FontSize="14"
-                       TextColor="Gray"
-                       IsVisible="False" />
-                
-                <!-- BindableLayout funciona correctamente dentro de ScrollView -->
-                <VerticalStackLayout x:Name="listaDentro"
-                                     Spacing="5">
-                    <BindableLayout.ItemTemplate>
+                <CollectionView x:Name="listaDentro"
+                                MinimumHeightRequest="300">
+                    <CollectionView.EmptyView>
+                        <ContentView>
+                            <Label Text="No hay vehículos dentro"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   FontSize="14"
+                                   TextColor="Gray" />
+                        </ContentView>
+                    </CollectionView.EmptyView>
+                    
+                    <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame Padding="10"
                                    Margin="5"
@@ -99,6 +100,7 @@
                                    CornerRadius="5"
                                    HasShadow="True">
                                 <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10">
+                                    
                                     <!-- Placa -->
                                     <Label Grid.Row="0" Grid.Column="0"
                                            Text="Placa:"
@@ -107,11 +109,13 @@
                                            Text="{Binding Placa}"
                                            FontSize="16"
                                            FontAttributes="Bold" />
+                                    
                                     <!-- Tipo -->
                                     <Label Grid.Row="1" Grid.Column="0"
                                            Text="Tipo:" />
                                     <Label Grid.Row="1" Grid.Column="1"
                                            Text="{Binding Tipo}" />
+                                    
                                     <!-- Tiempo transcurrido -->
                                     <Label Grid.Row="2" Grid.Column="0"
                                            Text="Tiempo:" />
@@ -122,8 +126,8 @@
                                 </Grid>
                             </Frame>
                         </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </VerticalStackLayout>
             
         </VerticalStackLayout>
